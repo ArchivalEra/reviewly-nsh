@@ -49,6 +49,7 @@ Old users of `core.hooksPath reflect-hooks` invoke the `pre-commit` /
 from __future__ import annotations
 
 import os
+import shlex
 import subprocess
 import sys
 
@@ -161,8 +162,13 @@ def _push_readmes_together(repo, refs):
             lines.append(str(M("hookgate.ref_has_nothing", ref=lref)))
             checked += 1
             continue
+        # revs is a whitespace-separated list of revs (or one "a..b" range):
+        # shlex it so each rev lands in its own argv — passing the whole
+        # string as one argv makes git fail with "ambiguous argument" once
+        # rev-list yields more than one commit (observed on a fresh push of
+        # 4 commits: the README gate then saw an empty change set).
         rc, log = _sh(["git", "-C", repo, "log", "--name-only",
-                       "--pretty=format:", revs])
+                       "--pretty=format:", *shlex.split(revs)])
         changed = [ln for ln in (log or "").splitlines() if ln.strip()]
         fd, path = tempfile.mkstemp()
         try:
