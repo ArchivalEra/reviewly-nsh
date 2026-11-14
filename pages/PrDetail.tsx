@@ -1,6 +1,8 @@
 // The PR page: overview from the store, the lazily loaded files and diff,
 // DiffView in patch mode with line annotations, and the review to save.
-import { signal, Text, View } from "nsh";
+// The body scrolls: the diff and the review bar together are taller than a
+// phone's screen, and a bar cut off by its end is unreachable.
+import { Scroll, signal, Text, View } from "nsh";
 import { Button, DiffView, Input, NavPage } from "nsh/base";
 import { Badge } from "../components/Badge";
 import { Header } from "../components/Header";
@@ -47,7 +49,7 @@ export function PrDetail(props: { full: string; n: number }) {
 
   return (
     <NavPage title={`PR ${props.n}`} header={<Header title={record()?.title ?? `PR ${props.n}`} />}>
-      <View class="flex-1">
+      <Scroll class="flex-1">
         <View class="gap-2 border-b border-border px-4 py-3">
           <Text class="text-base font-semibold text-foreground">{record()?.title ?? `#${props.n}`}</Text>
           <View class="flex-row items-center gap-2">
@@ -90,14 +92,14 @@ export function PrDetail(props: { full: string; n: number }) {
           </If>
         </View>
 
-        <View class="flex-1">
+        <View class="min-h-40">
           <If when={detail()} else={<View class="items-center py-6"><Text class="text-sm text-muted-foreground">Loading diff…</Text></View>}>
             {(d) => (
               <DiffView
                 patch={d().diff}
                 layout="unified"
                 onLineSelectionChange={onSelection}
-                class="flex-1"
+                class="h-80"
               />
             )}
           </If>
@@ -159,7 +161,7 @@ export function PrDetail(props: { full: string; n: number }) {
             )}
           </If>
         </View>
-      </View>
+      </Scroll>
     </NavPage>
   );
 }

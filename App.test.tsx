@@ -37,6 +37,8 @@ const DIFF = "diff --git a/src/a.ts b/src/a.ts\n--- a/src/a.ts\n+++ b/src/a.ts\n
 // overrides the network routes (T6's failure case).
 async function openApp(routes: Record<string, unknown> = {}): Promise<App> {
   const app = await open("./App.tsx", {
+    width: 900,
+    height: 1400,
     clock: {},
     network: {
       [LIST_URL]: { body: [listItem(1)], headers: { "x-ratelimit-remaining": "59", "x-ratelimit-reset": "1790000000" } },
@@ -84,6 +86,8 @@ test("T3: a changed head goes STALE, and a re-saved review goes fresh", async ()
   let updatedAt = "2026-11-01T10:00:00Z";
   let calls = 0;
   const app = await open("./App.tsx", {
+    width: 900,
+    height: 1400,
     clock: {},
     network: {
       [LIST_URL]: () => {
@@ -175,6 +179,8 @@ test("T5: a saved token is sent as Bearer; anonymous sends none", async () => {
 
 test("T6: a network failure shows the error and the app survives", async () => {
   const app = await open("./App.tsx", {
+    width: 900,
+    height: 1400,
     clock: {},
     network: {
       [LIST_URL]: { error: "offline" },
