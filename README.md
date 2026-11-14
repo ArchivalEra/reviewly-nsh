@@ -1,92 +1,108 @@
 # reviewly-nsh
 
-[Reviewly](https://github.com/volnei/reviewly) 的审查流，以 [NSH（Native Shell, nsh.dev）](https://nsh.dev) 应用重写：
-一个 TSX 代码库，同时跑在 **Android / Web / 桌面**。参考实现（Tauri 桌面应用）的职责划分、
-数据流与审查语义全部继承；本仓库是 v2 唯一交付物，最终以 PR 回推
-`ArchivalEra/reviewly-nsh` 独立维护。
+[![facts](https://img.shields.io/badge/facts-Einfacht-blue)](STATE.md)
 
-## 使命
+Reviewly's review flow, rebuilt as a [NSH (Native Shell, nsh.dev)](https://nsh.dev) app:
+one TSX codebase running on **Android / Web / desktop** alike. The reference
+implementation (a Tauri desktop app) contributes the responsibilities, data flow and
+review semantics; this repo is the single v2 deliverable, maintained independently
+via PRs to `ArchivalEra/reviewly-nsh`.
 
-把 reviewly 的 PR 审查流带到 Android / Web / 桌面：应用自动发现已配置仓库的全部 PR，
-懒加载 diff，行级批注，并把「PR 变更 ⇒ 强制重审」作为一等语义。三个文档构成 v2 的
-产品契约：
+**Languages:** **English** (this file, default) · [简体中文](README.zh.md) · [Deutsch](README.de.md)
 
-| 文档 | 内容 |
+## Mission
+
+Bring Reviewly's PR review flow to Android / Web / desktop: the app discovers every
+PR of the configured repositories by itself, lazy-loads diffs, annotates lines, and
+treats "a PR changed ⇒ re-review required" as a first-class semantic. Three documents
+form the v2 product contract:
+
+| Document | Content |
 |---|---|
-| [INTAKE.md](INTAKE.md) | v2 的摄入理念：报告者不再登记，PR 提交本身就是事实 |
-| [PRIVACY-CRITERIA.md](PRIVACY-CRITERIA.md) | P1..P8 隐私判据与分析纪律 |
-| [README.md](README.md) | 本文件：使命、三法律、平台矩阵、运行命令、目录说明 |
+| [INTAKE.md](INTAKE.md) | The v2 intake idea: reporters no longer register — a PR submission itself is the fact |
+| [PRIVACY-CRITERIA.md](PRIVACY-CRITERIA.md) | P1..P8 privacy criteria and annotation discipline |
+| [README.md](README.md) | This file: mission, three laws, platform matrix, commands, layout |
 
-## Einfacht 三法律
+## The three Einfacht laws
 
-语义内核继承 Einfacht 三法律，全部行为由此推导：
+The semantic core inherits Einfacht's three laws; all behavior derives from them:
 
-1. **事实仅生产一次**。GitHub 返回的一切（PR 元数据、files、diff、状态）由应用调
-   `fetch` 抓取后直接入库（`Storage`），UI 只从 store 读。除用户写的审查批注外，
-   任何界面禁止手抄/硬编码 GitHub 字段。
-2. **懒加载**。列表探针（`GET /repos/{o}/{r}/pulls` 一次拿全列表）与库中缓存比对，
-   四元组 `state + merged + updatedAt + headSha` 不变 ⇒ 不拉该 PR 的全量；变了才
-   拉详情（`/pulls/{n}` + `/files`，diff 按需）。不打开详情页不拉 diff。
-3. **PR 更改 ⇒ 强制重审**。当前 `headSha` 与库中已存批注绑定的 `headSha` 不一致 ⇒
-   该 PR 批注状态 `STALE`（UI 显式标注，旧批注保留）；重新保存批注（绑定当前
-   head）后回 `fresh`。
+1. **Facts are produced exactly once.** Everything GitHub returns (PR metadata,
+   files, diffs, state) is fetched by the app and stored directly (`Storage`); the UI
+   reads only from the store. Except for user-written review annotations, no screen
+   may hand-copy or hard-code GitHub fields.
+2. **Lazy loading.** The list probe (`GET /repos/{o}/{r}/pulls`, the whole list at
+   once) is compared against the cached record; if the four-tuple
+   `state + merged + updatedAt + headSha` is unchanged, the full pull for that PR is
+   skipped; only a change triggers the detail fetch (`/pulls/{n}` + `/files`, diff on
+   demand). Opening no detail page fetches no diff.
+3. **A PR changed ⇒ re-review required.** If the current `headSha` differs from the
+   `headSha` bound to the stored annotation, that PR's annotation state is `STALE`
+   (marked explicitly in the UI, old annotation kept); re-saving the annotation
+   (binding the current head) returns it to `fresh`.
 
-## 平台矩阵
+## Platform matrix
 
-NSH 每个平台有自己的原生后端；同一份 TSX 代码在 QuickJS（Web 上为浏览器自身
-JS 引擎）中运行，原生侧渲染。
+Every NSH platform has its own native backend; the same TSX code runs in QuickJS
+(the browser's own JS engine on the web), rendered natively on each side.
 
-| 平台 | 运行（开发） | 打包 |
+| Platform | Run (dev) | Package |
 |---|---|---|
-| Linux（GTK 4） | `nsh run --target linux` | `nsh package --target linux` |
-| macOS（AppKit） | `nsh run --target macos` | `nsh package --target macos` |
-| Windows（Win32） | `nsh run --target windows` | `nsh package --target windows` |
-| Android | `nsh run --target android` | `nsh package --target android`（.apk） |
-| Web | `nsh run --target web` | `nsh package --target web`（静态站；输出目录由 `--out` 控制，v2 验收约定 `dist/web/`） |
+| Linux (GTK 4) | `nsh run --target linux` | `nsh package --target linux` |
+| macOS (AppKit) | `nsh run --target macos` | `nsh package --target macos` |
+| Windows (Win32) | `nsh run --target windows` | `nsh package --target windows` |
+| Android | `nsh run --target android` | `nsh package --target android` (.apk) |
+| Web | `nsh run --target web` | `nsh package --target web` (static site; output dir via `--out`) |
 
-## 运行命令
+## Commands
 
-工具链来自 `nsh` CLI（本机 `nsh` 或 checkout 里的 `target/<profile>/nsh`），纯 Rust，
-不需要 Node.js。
+The toolchain is the `nsh` CLI (a locally installed `nsh` or the checkout's
+`target/<profile>/nsh`), pure Rust, no Node.js needed.
 
 ```sh
-nsh dev                    # 开发服务器 + 开发宿主，保存即热重载
-nsh run                    # 开发模式下在本机默认平台跑应用
-nsh run --target web       # 浏览器里跑（dev server 提供页面）
-nsh run --target android   # 模拟器/设备上跑（需 cargo xtask android --dev 准备运行时）
-nsh package --target web   # 打包为静态站（默认输出 .nsh/out/<name>/；v2 验收用 --out dist/web）
-nsh check                  # 类型检查
-nsh test                   # 跑 *.test.tsx（headless；--target web 用无头 Chrome）
+nsh dev                    # dev server + dev host, hot reload on save
+nsh run                    # run on this machine's default platform in dev mode
+nsh run --target web       # run in the browser (dev server serves the page)
+nsh run --target android   # run on a device/emulator (needs cargo xtask android --dev)
+nsh package --target web   # package as a static site (default .nsh/out/<name>/; --out to change)
+nsh check                  # type check
+nsh test                   # run *.test.tsx (headless; --target web drives headless Chrome)
 ```
 
-## 目录说明
+## Layout
 
 ```
 reviewly-nsh/
-├── nsh.json            # NSH 应用清单：capabilities.network.hosts=["api.github.com"]、theme 指向 theme.json
-├── App.tsx             # 入口：mount + NavStack
-├── nav.ts              # 路由：Route = inbox | pr | settings
-├── store.ts            # signals + fetch 层（repos/settings/prs/rateLimit/syncState + 动作）
-├── theme.json          # 语义 token（background/foreground/muted/accent/success/danger/border/card）
-├── pages/              # 一页一文件：Inbox、PR 详情、设置
-├── components/         # 共享组件
+├── nsh.json            # NSH app manifest: capabilities.network.hosts=["api.github.com"], theme → theme.json
+├── App.tsx             # entry: mount + NavStack
+├── nav.ts              # routes: Route = inbox | pr | settings
+├── store.ts            # signals + fetch layer (repos/settings/prs/rateLimit/syncState + actions)
+├── theme.json          # semantic tokens (background/foreground/muted/accent/success/danger/border/card)
+├── pages/              # one file per page: Inbox, PR detail, Settings
+├── components/         # shared components
 ├── lib/
-│   ├── gh.ts           # GitHub API 客户端：fetch 封装、鉴权头、速率头、探针/全量/diff、懒加载判定
-│   └── gh.test.ts      # gh.ts 的单测
-└── *.test.tsx          # §SELFTEST 场景（T1..T7）测试
+│   ├── gh.ts           # GitHub API client: fetch wrapper, auth headers, rate headers, probe/full/diff, lazy probe
+│   └── gh.test.ts      # unit tests for gh.ts
+└── *.test.tsx          # the §SELFTEST scenarios (T1..T7)
 ```
 
-## 数据与隐私
+## Data & privacy
 
-- 抓取的 PR 数据只存本机 `Storage`（异步 K/V，每 app 5MB 配额），不上传任何服务器。
-- 唯一人工输入是 PAT 与仓库清单，都在设置页；报告者不再登记（见 [INTAKE.md](INTAKE.md)）。
-- 网络面只有一个主机：`nsh.json` `capabilities.network.hosts: ["api.github.com"]`，
-  其余一律被 NSH 沙箱拒绝。隐私判据见 [PRIVACY-CRITERIA.md](PRIVACY-CRITERIA.md)。
+- Fetched PR data is stored only in on-device `Storage` (async K/V, 5 MB per-app
+  quota); nothing is uploaded to any server.
+- The only human inputs are the PAT and the repository list, both in the settings
+  page; reporters no longer register anything (see [INTAKE.md](INTAKE.md)).
+- The network surface is one host: `nsh.json`
+  `capabilities.network.hosts: ["api.github.com"]`; everything else is refused by the
+  NSH sandbox. Privacy criteria: [PRIVACY-CRITERIA.md](PRIVACY-CRITERIA.md).
 
-## 测试
+## Testing
 
-`nsh test`（Web target，浏览器引擎跑真组件；环境缺浏览器时降级 `--target linux` +
-Xvfb）。验收场景 T1..T7 见工作区 `APP-SPEC.md` §SELFTEST：事实仅生产一次、探针懒加载、
-STALE→fresh、批注绑 head、PAT/匿名配额、空仓/网络失败不崩、`Storage` 持久化。
+`nsh test` (web target: real components in a browser engine; falls back to
+`--target linux` + Xvfb without a browser). The acceptance scenarios T1..T7 live in
+the workspace `APP-SPEC.md` §SELFTEST: facts produced once, probe lazy loading,
+STALE→fresh, annotations bind the head, PAT/anonymous quota, empty repo/network
+failure must not crash, `Storage` persistence.
 
-场景测试与 `lib/gh.ts` 的单测分别放在 `*.test.tsx` 与 `lib/gh.test.ts`。
+The scenario tests and the `lib/gh.ts` unit tests sit in `*.test.tsx` and
+`lib/gh.test.ts` respectively.
