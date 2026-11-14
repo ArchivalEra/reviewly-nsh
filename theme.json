@@ -1,0 +1,52 @@
+{
+  "name": "Reviewly",
+  "cssVars": {
+    "theme": {
+      "radius": "10px"
+    },
+    "light": {
+      "background": "#f6f7f9",
+      "foreground": "#171a21",
+      "card": "#ffffff",
+      "card-foreground": "var(--foreground)",
+      "popover": "#f8f9fb",
+      "popover-foreground": "var(--foreground)",
+      "primary": "#2563eb",
+      "primary-foreground": "#ffffff",
+      "secondary": "var(--muted)",
+      "secondary-foreground": "var(--foreground)",
+      "muted": "#eceef1",
+      "muted-foreground": "#5f646d",
+      "accent": "#2563eb",
+      "accent-foreground": "#ffffff",
+      "destructive": "#d43a4a",
+      "success": "#138a5a",
+      "warning": "#b26a00",
+      "border": "#d3d6db",
+      "input": "#c4c8ce",
+      "ring": "#93a3b8"
+    },
+    "dark": {
+      "background": "#14161b",
+      "foreground": "#e8eaee",
+      "card": "#1d2026",
+      "card-foreground": "var(--foreground)",
+      "popover": "#1d2026",
+      "popover-foreground": "var(--foreground)",
+      "primary": "#5b8def",
+      "primary-foreground": "#0e1117",
+      "secondary": "var(--muted)",
+      "secondary-foreground": "var(--foreground)",
+      "muted": "#262a31",
+      "muted-foreground": "#9aa0a9",
+      "accent": "#5b8def",
+      "accent-foreground": "#0e1117",
+      "destructive": "#ff6170",
+      "success": "#45d49a",
+      "warning": "#ffb547",
+      "border": "#30343b",
+      "input": "#3a3f47",
+      "ring": "#5d636e"
+    }
+  }
+}

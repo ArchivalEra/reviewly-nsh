@@ -1,0 +1,13 @@
+{
+  "name": "Reviewly",
+  "id": "com.archivalera.reviewly",
+  "version": "2.0.0",
+  "build": 1,
+  "appearance": "system",
+  "theme": "./theme.json",
+  "capabilities": {
+    "network": {
+      "hosts": ["api.github.com"]
+    }
+  }
+}
