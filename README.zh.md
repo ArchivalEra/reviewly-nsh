@@ -7,7 +7,7 @@
 数据流与审查语义全部继承；本仓库是 v2 唯一交付物，最终以 PR 回推
 `ArchivalEra/reviewly-nsh` 独立维护。
 
-**语言：** [English](README.md)（默认）· [README.zh.md（简体中文）](README.zh.md)（本文件）· [README.de.md（Deutsch）](README.de.md)
+**语言：** [English](README.md)（默认）· [README.zh.md（简体中文，本文件）](README.zh.md)
 
 ## 使命
 

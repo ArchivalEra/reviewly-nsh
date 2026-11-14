@@ -8,7 +8,7 @@ implementation (a Tauri desktop app) contributes the responsibilities, data flow
 review semantics; this repo is the single v2 deliverable, maintained independently
 via PRs to `ArchivalEra/reviewly-nsh`.
 
-**Languages:** **English** (this file, default) · [简体中文](README.zh.md) · [Deutsch](README.de.md)
+**Languages:** **English** (this file, default) · [README.zh.md (简体中文)](README.zh.md)
 
 ## Mission
 
