@@ -263,5 +263,8 @@ function recordOf(item: ReturnType<typeof listItem>): PrRecord {
 await Promise.all(checks);
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length > 0) {
-  process.exitCode = 1;
+  // nsh's `process` module has no `exitCode` (`exit` asks the host, which
+  // does not grant it): a failure is the console's summary and nsh test's
+  // own report.
+  console.log("FAILURES");
 }

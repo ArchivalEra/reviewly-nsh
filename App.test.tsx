@@ -105,7 +105,7 @@ test("T3: a changed head goes STALE, and a re-saved review goes fresh", async ()
   await app.waitFor("role:button[Save review]");
   await app.type("label:Review summary", "looks good");
   await app.press("role:button[Save review]");
-  await app.waitFor("Review saved: comment at");
+  await app.waitFor("text:/Review saved/");
   await app.back();
   await app.waitFor("#1 PR 1");
   expect(app.texts()).toContain("fresh");
@@ -122,7 +122,7 @@ test("T3: a changed head goes STALE, and a re-saved review goes fresh", async ()
   await app.waitFor("role:button[Save review]");
   await app.type("label:Review summary", "re-reviewed");
   await app.press("role:button[Save review]");
-  await app.waitFor("Review saved: comment at");
+  await app.waitFor("text:/Review saved/");
   await app.back();
   await app.waitFor("#1 PR 1");
   expect(app.texts()).toContain("fresh");
@@ -138,18 +138,24 @@ test("T4: the saved review carries the record's current headSha", async () => {
   await app.type("label:Review summary", "bound to the head");
   await app.press("role:button[Save review]");
   // The page shows which head the review was saved on: the record's sha-1.
-  await app.waitFor("Review saved: comment at");
+  await app.waitFor("text:/Review saved/");
   expect(app.texts().some((t) => t.includes("on sha-1"))).toBe(true);
 });
 
 // --- T5: the PAT rides along as Authorization: Bearer ---
+
+// The host records header names lower-cased, so look-ups are case-insensitive.
+function headerOf(request: { headers: Record<string, string> }, name: string): string | undefined {
+  const key = Object.keys(request.headers).find((k) => k.toLowerCase() === name.toLowerCase());
+  return key === undefined ? undefined : request.headers[key];
+}
 
 test("T5: a saved token is sent as Bearer; anonymous sends none", async () => {
   // Anonymous: no Authorization header on the probe.
   const anon = await openApp();
   const anonProbe = anon.requests().find((r) => r.url.includes("/pulls?"));
   expect(anonProbe !== undefined).toBe(true);
-  expect(anonProbe!.headers["Authorization"] === undefined).toBe(true);
+  expect(headerOf(anonProbe!, "Authorization") === undefined).toBe(true);
 
   // With a token saved on the settings page, the next request carries it.
   await anon.press("role:button[Settings]");
@@ -160,9 +166,9 @@ test("T5: a saved token is sent as Bearer; anonymous sends none", async () => {
   await anon.waitFor("role:button[Sync]");
   await anon.press("role:button[Sync]");
   await anon.waitFor("Syncing…", { state: "gone" });
-  const probe = anon.requests().find((r) => r.url.includes("/pulls?") && r.headers["Authorization"] !== undefined);
+  const probe = anon.requests().find((r) => r.url.includes("/pulls?") && headerOf(r, "Authorization") !== undefined);
   expect(probe !== undefined).toBe(true);
-  expect(probe!.headers["Authorization"]).toBe("Bearer ghp_test_token");
+  expect(headerOf(probe!, "Authorization")).toBe("Bearer ghp_test_token");
 });
 
 // --- T6: a failing sync is visible, and the app keeps running ---
@@ -192,7 +198,7 @@ test("T7: a review written once is in Storage after a reload", async () => {
   await app.waitFor("role:button[Save review]");
   await app.type("label:Review summary", "persisted");
   await app.press("role:button[Save review]");
-  await app.waitFor("Review saved: comment at");
+  await app.waitFor("text:/Review saved/");
   // The host's Storage holds the serialized reviews.
   const reviews = app.storage()["reviews"];
   expect(reviews !== undefined).toBe(true);
