@@ -15,7 +15,7 @@ gh token 是 fine-grained 只读，HTTPS push 403。github 直连超时，代理
 ```bash
 export https_proxy=http://127.0.0.1:2080 http_proxy=http://127.0.0.1:2080
 set -a && . ./reflect-hooks/Einfacht.env && set +a   # 本仓 pre-push 闸门要的旋钮，命令以能顺利通过为准
-git push origin feat/nsh-app:main                     # ArchivalEra/reviewly-nsh
+git push origin feat/nsh-app:main                     # 经 github-ArchivalEra 别名，锁 ArchivalEra SK key
 ```
 
 push 前跑 `code-review` skill 审自己的改动，把审查结论和改动说明写在输出里，然后停止
