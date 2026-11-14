@@ -1,55 +1,55 @@
 {
  "schema": 1,
- "generated": "2026-11-14T13:49:35+0800",
- "_why": "事实台账：每条 = 一个**测出来**的值 + 复跑命令 + 出处。别手改，跑 zreflect/facts.py。",
+ "generated": "2026-11-14T14:12:03+0800",
+ "_why": "facts.ledger_why",
  "facts": {
   "tsx_files": {
    "value": 8,
    "cmd": "python3 zreflect/facts.py --get tsx_files",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "tsx_lines": {
    "value": 703,
    "cmd": "python3 zreflect/facts.py --get tsx_lines",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "ts_files": {
    "value": 4,
    "cmd": "python3 zreflect/facts.py --get ts_files",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "ts_lines": {
    "value": 917,
    "cmd": "python3 zreflect/facts.py --get ts_lines",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "pages": {
    "value": 3,
    "cmd": "python3 zreflect/facts.py --get pages",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "components": {
    "value": 3,
    "cmd": "python3 zreflect/facts.py --get components",
    "source": "measure_reviewlynsh",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14"
   },
   "principle.only_measured": {
    "value": "ok",
    "cmd": "python3 -c \"import json,sys;d=json.load(open('FACTS.json', encoding='utf-8'))['facts'];bad=[k for k,v in d.items() if not (isinstance(v,dict) and str(v.get('cmd','')).strip())];print('facts_without_cmd=%d' % len(bad));sys.exit(1 if bad else 0)\"",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "numbers/behavior trust measurement only; every fact must carry a re-run command",
    "kind": "principle"
@@ -58,7 +58,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_facts.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "each number is produced once: documents reference it as [[key]], never hand-copied (enforced both ways)",
    "kind": "principle"
@@ -67,7 +67,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/registry.py --selftest",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "claims must be falsifiable: always-true shortcuts are swept by AST and any hit fails",
    "kind": "principle"
@@ -76,7 +76,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/registry.py --gates",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "predicates are declarations, not filenames: the execution surface reads registry --run <phase>",
    "kind": "principle"
@@ -85,7 +85,7 @@
    "value": "ok",
    "cmd": "python3 -c \"import sys;sys.path.insert(0,'zreflect');import registry, criteria;gs=registry.gates()[0];p=criteria.off_reason_problems(gs);print('off_reason_ok gates=%d problems=%d' % (len(gs), len(p)));sys.exit(0 if gs and not p else 1)\"",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "off must be distinguishable from \"ran and passed\"; a gate that can go off must declare why",
    "kind": "principle"
@@ -94,7 +94,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_i18n.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "zero language in the core: user-visible messages go through M(code); machine contracts are untranslatable by construction",
    "kind": "principle"
@@ -103,7 +103,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/machine.py --selftest",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "machine rows are defined in one place, machine.ROWS; the shell side has a behavior reconciler",
    "kind": "principle"
@@ -112,7 +112,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_readme_sync.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "the three-language READMEs are three copies of one assertion: change one, change all three in the same batch",
    "kind": "principle"
@@ -121,7 +121,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_snapshots.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "a mutable global imported across modules is a value copy (stale snapshot): read via the module attribute instead",
    "kind": "principle"
@@ -130,7 +130,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_retractions.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "a retracted claim must not quietly return as current state",
    "kind": "principle"
@@ -139,7 +139,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_stale.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "retired names must not appear as current state; sha provenance and age are checkable",
    "kind": "principle"
@@ -148,7 +148,7 @@
    "value": "ok",
    "cmd": "python3 zreflect/check_questions.py",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "every unresolved open question must carry a runnable settler",
    "kind": "principle"
@@ -157,7 +157,7 @@
    "value": "ok",
    "cmd": "python3 -c \"import sys;sys.path.insert(0,'zreflect');import registry;u=registry.modules()[1];print('undeclared_modules=%d' % len(u));sys.exit(1 if u else 0)\"",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "every gate must have a --selftest entry (written but never run = decoration)",
    "kind": "principle"
@@ -166,7 +166,7 @@
    "value": "ok",
    "cmd": "python3 -c \"import os,sys;w=['.'+chr(122)+chr(99)+chr(111)+chr(100)+chr(101)+'/','ZCODE_'+'PROJECT_DIR','hook'+'SpecificOutput'];bad=[(d,f) for d in ('zreflect','reflect-hooks') for r,_,fs in os.walk(d) for f in fs if f.endswith(('.py','.sh')) and any(k in open(os.path.join(r,f),encoding='utf-8',errors='replace').read() for k in w)];print('host_coupled=%d' % len(bad));sys.exit(1 if bad else 0)\"",
    "source": "principle",
-   "measured_at": "2026-11-14T13:49:35+0800",
+   "measured_at": "2026-11-14T14:12:03+0800",
    "first_seen": "2026-11-14",
    "note": "the suite's source recognizes no host's directory names / config formats (host wiring belongs to the consumer)",
    "kind": "principle"
